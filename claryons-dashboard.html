@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claryons – Compliance Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f2ec;
+  --sidebar: #2b2420;
+  --sidebar-w: 64px;
+  --card: #ffffff;
+  --cream: #ede9e0;
+  --gold: #b8892a;
+  --gold-l: #d4a843;
+  --brown: #5c3d2e;
+  --dark: #1e1a16;
+  --mid: #7a6f63;
+  --border: rgba(92,61,46,0.12);
+  --green: #2d7d46;
+  --green-bg: #eaf5ee;
+  --amber: #c47a1e;
+  --amber-bg: #fdf3e3;
+  --red: #b93b3b;
+  --red-bg: #fdeaea;
+  --blue: #2c5f8a;
+  --blue-bg: #e8f0f8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);display:flex;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--sidebar);display:flex;flex-direction:column;align-items:center;padding:18px 0;gap:6px;flex-shrink:0;z-index:10;}
+.sidebar-logo{width:38px;height:38px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:17px;font-weight:900;color:#fff;font-family:'Playfair Display',serif;}
+.sidebar-item{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;color:rgba(255,255,255,0.4);font-size:18px;transition:all 0.2s;position:relative;}
+.sidebar-item:hover,.sidebar-item.active{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9);}
+.sidebar-item.active::before{content:'';position:absolute;left:-2px;top:10px;bottom:10px;width:3px;background:var(--gold);border-radius:2px;}
+.sidebar-item svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.sidebar-bottom{margin-top:auto;}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* HEADER */
+header{height:60px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;flex-shrink:0;}
+.header-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--dark);letter-spacing:0.06em;text-transform:uppercase;}
+.hspacer{flex:1;}
+.hlocation{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mid);font-weight:500;letter-spacing:0.05em;}
+.hbell{width:34px;height:34px;border-radius:8px;background:var(--cream);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;}
+.bell-dot{width:7px;height:7px;background:var(--red);border-radius:50%;position:absolute;top:7px;right:7px;border:1.5px solid #fff;}
+.havatar{width:34px;height:34px;border-radius:8px;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;}
+.huser{display:flex;align-items:center;gap:7px;cursor:pointer;}
+.huser span{font-size:13px;font-weight:500;}
+.caret{font-size:10px;color:var(--mid);}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:22px 28px;display:flex;flex-direction:column;gap:20px;}
+.content::-webkit-scrollbar{width:4px;}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;}
+.page-header h1{font-family:'Playfair Display',serif;font-size:21px;font-weight:600;}
+.co-select{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);padding:7px 13px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;}
+.co-select svg{width:13px;height:13px;}
+
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;animation:fadeUp 0.35s ease both;}
+.stat-card{background:var(--card);border-radius:12px;padding:15px 18px;border:1px solid var(--border);display:flex;align-items:center;gap:13px;}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.si-gold{background:var(--amber-bg);}
+.si-green{background:var(--green-bg);}
+.si-red{background:var(--red-bg);}
+.si-blue{background:var(--blue-bg);}
+.stat-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;line-height:1;color:var(--dark);}
+.stat-lbl{font-size:11px;color:var(--mid);margin-top:3px;font-weight:500;}
+
+/* COMPLIANCE CARDS */
+.cards-row{display:grid;grid-template-columns:repeat(4,1fr) 1.1fr;gap:14px;}
+.cc{background:var(--card);border-radius:14px;padding:17px;border:1px solid var(--border);transition:transform 0.2s,box-shadow 0.2s;cursor:pointer;animation:fadeUp 0.4s ease both;}
+.cc:nth-child(1){animation-delay:.06s}
+.cc:nth-child(2){animation-delay:.12s}
+.cc:nth-child(3){animation-delay:.18s}
+.cc:nth-child(4){animation-delay:.24s}
+.cc:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.07);}
+.cc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
+.cc-top h3{font-size:15px;font-weight:700;}
+.cc-ico{width:28px;height:28px;border-radius:7px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.cc-meta{font-size:11px;color:var(--mid);margin-bottom:2px;}
+.cc-date{font-size:13px;font-weight:600;margin-bottom:9px;}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;}
+.pill::before{content:'●';font-size:6px;}
+.pill-pending{background:var(--amber-bg);color:var(--amber);}
+.pill-done{background:var(--green-bg);color:var(--green);}
+.pill-over{background:var(--red-bg);color:var(--red);}
+.pbar{height:5px;background:var(--cream);border-radius:4px;margin-bottom:12px;overflow:hidden;}
+.pfill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold-l));}
+.pfill-red{background:linear-gradient(90deg,#b93b3b,#e05555);}
+.cc-sub{font-size:11px;color:var(--mid);margin-bottom:12px;}
+.btn-view{width:100%;padding:8px;border-radius:7px;background:var(--sidebar);color:#fff;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.05em;transition:background 0.2s;}
+.btn-view:hover{background:var(--brown);}
+
+/* CALENDAR CARD */
+.cal-card{background:var(--card);border-radius:14px;padding:17px;border:1px solid var(--border);animation:fadeUp 0.4s ease 0.28s both;}
+.cal-card h3{font-size:13px;font-weight:700;margin-bottom:12px;}
+.cal-ev{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);}
+.cal-ev:last-of-type{border-bottom:none;}
+.cal-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.cd-gold{background:var(--gold);}
+.cd-brown{background:var(--brown);}
+.cd-blue{background:var(--blue);}
+.cal-ev h5{font-size:11px;font-weight:600;margin-bottom:1px;}
+.cal-ev span{font-size:10px;color:var(--mid);}
+.btn-reminder{width:100%;margin-top:12px;padding:9px;background:var(--gold);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
+.btn-reminder:hover{background:var(--gold-l);}
+
+/* BOTTOM */
+.bottom-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px;}
+
+/* LABOUR TABLE */
+.labour-card{background:var(--card);border-radius:14px;padding:20px;border:1px solid var(--border);animation:fadeUp 0.4s ease 0.32s both;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sec-hdr h3{font-size:13px;font-weight:700;}
+.view-all{font-size:11px;color:var(--gold);font-weight:600;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:10px;font-weight:600;color:var(--mid);text-transform:uppercase;letter-spacing:0.06em;padding:0 0 9px;text-align:left;border-bottom:1px solid var(--border);}
+tbody td{padding:10px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,0.04);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#faf8f4;}
+.law-name{font-weight:600;font-size:12px;}
+.law-sub{font-size:10px;color:var(--mid);margin-top:1px;}
+.td-date{color:var(--mid);font-size:11px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:6px;font-size:10px;font-weight:600;}
+.bp{background:var(--amber-bg);color:var(--amber);}
+.br{background:var(--blue-bg);color:var(--blue);}
+.bf{background:var(--green-bg);color:var(--green);}
+
+/* HEALTH CHART */
+.health-card{background:var(--card);border-radius:14px;padding:20px;border:1px solid var(--border);animation:fadeUp 0.4s ease 0.38s both;}
+.chart-wrap{position:relative;height:120px;margin-top:10px;}
+svg.chart{width:100%;height:100%;overflow:visible;}
+
+/* VCO */
+.vco-card{background:linear-gradient(140deg,var(--sidebar) 0%,#3d2a1e 100%);border-radius:14px;padding:20px;border:1px solid transparent;animation:fadeUp 0.4s ease 0.44s both;display:flex;flex-direction:column;gap:13px;}
+.vco-card h3{font-size:13px;font-weight:700;color:#fff;}
+.vco-body{display:flex;gap:11px;align-items:flex-start;}
+.vco-av{width:42px;height:42px;border-radius:50%;background:var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.vco-bubble{background:rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;flex:1;}
+.vco-bubble .vco-name{font-size:10px;font-weight:700;color:var(--gold-l);margin-bottom:4px;}
+.vco-bubble p{font-size:11px;color:rgba(255,255,255,0.75);line-height:1.5;}
+.vco-actions{display:flex;gap:9px;}
+.bvco{flex:1;padding:9px;border-radius:7px;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.03em;transition:all 0.2s;}
+.bvco-p{background:var(--gold);color:#fff;}
+.bvco-p:hover{background:var(--gold-l);}
+.bvco-s{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);}
+.bvco-s:hover{background:rgba(255,255,255,0.18);}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.38);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border-radius:16px;padding:28px;width:400px;max-width:90vw;transform:scale(0.95);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.15);}
+.overlay.open .modal{transform:scale(1);}
+.modal h3{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;margin-bottom:18px;}
+.mrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+.mrow:last-of-type{border-bottom:none;}
+.mrow .k{font-size:12px;color:var(--mid);}
+.mrow .v{font-size:12px;font-weight:600;}
+.modal-close{width:100%;margin-top:18px;padding:11px;background:var(--sidebar);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">C</div>
+  <div class="sidebar-item active">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  </div>
+  <div class="sidebar-item">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+  </div>
+  <div class="sidebar-item">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  </div>
+  <div class="sidebar-item">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+  </div>
+  <div class="sidebar-item">
+    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+  </div>
+  <div class="sidebar-item">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </div>
+  <div class="sidebar-item sidebar-bottom">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <header>
+    <div class="header-title">Compliance Management System</div>
+    <div class="hspacer"></div>
+    <div class="hlocation">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Chandigarh, India
+    </div>
+    <div class="hbell">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5c3d2e" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="bell-dot"></div>
+    </div>
+    <div class="huser">
+      <div class="havatar">A</div>
+      <span>Admin</span>
+      <span class="caret">▾</span>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <h1>Dashboard</h1>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div class="co-select">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Pelopire Pvt. Ltd.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div style="font-size:11px;color:var(--mid);font-weight:500;">FY 2024–25</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon si-gold">📋</div>
+        <div><div class="stat-val">12</div><div class="stat-lbl">Total Compliances</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-green">✅</div>
+        <div><div class="stat-val">7</div><div class="stat-lbl">Completed</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-gold">⏳</div>
+        <div><div class="stat-val">4</div><div class="stat-lbl">Pending</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-red">⚠️</div>
+        <div><div class="stat-val">1</div><div class="stat-lbl">Overdue</div></div>
+      </div>
+    </div>
+
+    <!-- COMPLIANCE CARDS + CALENDAR -->
+    <div class="cards-row">
+
+      <div class="cc" onclick="openModal('GST')">
+        <div class="cc-top"><h3>GST</h3><div class="cc-ico">📑</div></div>
+        <div class="cc-meta">Due Date</div>
+        <div class="cc-date">15th May 2023</div>
+        <span class="pill pill-pending">Pending</span>
+        <div class="pbar"><div class="pfill" style="width:40%"></div></div>
+        <div class="cc-sub">GSTR-3B · Monthly</div>
+        <button class="btn-view">View Details</button>
+      </div>
+
+      <div class="cc" onclick="openModal('Income Tax')">
+        <div class="cc-top"><h3>Income Tax</h3><div class="cc-ico">💰</div></div>
+        <div class="cc-meta">Due Date</div>
+        <div class="cc-date">31st July 2023</div>
+        <span class="pill pill-done">Completed</span>
+        <div class="pbar"><div class="pfill" style="width:100%"></div></div>
+        <div class="cc-sub">7th of Every Month</div>
+        <button class="btn-view">View Details</button>
+      </div>
+
+      <div class="cc" onclick="openModal('TDS')">
+        <div class="cc-top"><h3>TDS</h3><div class="cc-ico">🧾</div></div>
+        <div class="cc-meta">Due Date</div>
+        <div class="cc-date">31st July 2023</div>
+        <span class="pill pill-pending">Pending</span>
+        <div class="pbar"><div class="pfill" style="width:55%"></div></div>
+        <div class="cc-sub">Quarterly Filing</div>
+        <button class="btn-view">View Details</button>
+      </div>
+
+      <div class="cc" onclick="openModal('ROC')">
+        <div class="cc-top"><h3>ROC</h3><div class="cc-ico">⚙️</div></div>
+        <div class="cc-meta">Due Date</div>
+        <div class="cc-date">30th April 2023</div>
+        <span class="pill pill-over">Overdue</span>
+        <div class="pbar"><div class="pfill pfill-red" style="width:20%"></div></div>
+        <div class="cc-sub">MGT-7 Annual Return</div>
+        <button class="btn-view">View Details</button>
+      </div>
+
+      <div class="cal-card">
+        <h3>📅 Compliance Calendar</h3>
+        <div class="cal-ev">
+          <div class="cal-dot cd-gold"></div>
+          <div><h5>GST Return</h5><span>15th May 2023</span></div>
+        </div>
+        <div class="cal-ev">
+          <div class="cal-dot cd-brown"></div>
+          <div><h5>Income Tax Return</h5><span>31st July 2023</span></div>
+        </div>
+        <div class="cal-ev">
+          <div class="cal-dot cd-blue"></div>
+          <div><h5>TDS Quarterly Filing</h5><span>31st July 2023</span></div>
+        </div>
+        <button class="btn-reminder">Set Reminder</button>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div class="bottom-grid">
+
+      <!-- LABOUR TABLE -->
+      <div class="labour-card">
+        <div class="sec-hdr">
+          <h3>Labour Law Compliances</h3>
+          <span class="view-all">View All →</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Law / Act</th>
+              <th>Due Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="law-name">PF / ESIC</div>
+                <div class="law-sub">Provident Fund &amp; ESI Contribution</div>
+              </td>
+              <td class="td-date">15th May 2023</td>
+              <td><span class="badge bp">Steps Pending</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="law-name">Shop &amp; Establishment Act</div>
+                <div class="law-sub">Annual Return Filing</div>
+              </td>
+              <td class="td-date">30th Apr 2023</td>
+              <td><span class="badge br">Under Review</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="law-name">Professional Tax</div>
+                <div class="law-sub">Monthly Deposit</div>
+              </td>
+              <td class="td-date">30th Apr 2023</td>
+              <td><span class="badge bf">Filed</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="law-name">Labour Welfare Fund</div>
+                <div class="law-sub">Half-yearly Contribution</div>
+              </td>
+              <td class="td-date">30th Apr 2023</td>
+              <td><span class="badge bp">Steps Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- HEALTH CHART -->
+      <div class="health-card">
+        <div class="sec-hdr">
+          <h3>Monthly Health Report</h3>
+          <span class="view-all">2023</span>
+        </div>
+        <div class="chart-wrap">
+          <svg class="chart" viewBox="0 0 260 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#b8892a" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#b8892a" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="0"   x2="260" y2="0"   stroke="#ede9e0" stroke-width="1"/>
+            <line x1="0" y1="30"  x2="260" y2="30"  stroke="#ede9e0" stroke-width="1"/>
+            <line x1="0" y1="60"  x2="260" y2="60"  stroke="#ede9e0" stroke-width="1"/>
+            <line x1="0" y1="90"  x2="260" y2="90"  stroke="#ede9e0" stroke-width="1"/>
+            <line x1="0" y1="120" x2="260" y2="120" stroke="#ede9e0" stroke-width="1"/>
+            <text x="-3" y="4"   font-size="7.5" fill="#9e8f7e" text-anchor="end" font-family="DM Sans,sans-serif">10k</text>
+            <text x="-3" y="34"  font-size="7.5" fill="#9e8f7e" text-anchor="end" font-family="DM Sans,sans-serif">8k</text>
+            <text x="-3" y="64"  font-size="7.5" fill="#9e8f7e" text-anchor="end" font-family="DM Sans,sans-serif">5k</text>
+            <text x="-3" y="94"  font-size="7.5" fill="#9e8f7e" text-anchor="end" font-family="DM Sans,sans-serif">2k</text>
+            <path d="M10,105 C20,98 30,92 43,88 C60,82 70,90 80,82 C95,70 110,55 130,42 C148,30 162,20 178,14 C195,8 215,6 245,4" fill="none" stroke="#b8892a" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M10,105 C20,98 30,92 43,88 C60,82 70,90 80,82 C95,70 110,55 130,42 C148,30 162,20 178,14 C195,8 215,6 245,4 L245,120 L10,120 Z" fill="url(#ag)"/>
+            <circle cx="10"  cy="105" r="3.5" fill="#b8892a"/>
+            <circle cx="43"  cy="88"  r="3.5" fill="#b8892a"/>
+            <circle cx="80"  cy="82"  r="3.5" fill="#b8892a"/>
+            <circle cx="113" cy="62"  r="3.5" fill="#b8892a"/>
+            <circle cx="146" cy="38"  r="3.5" fill="#b8892a"/>
+            <circle cx="178" cy="14"  r="3.5" fill="#b8892a"/>
+            <circle cx="212" cy="7"   r="3.5" fill="#b8892a"/>
+            <circle cx="245" cy="4"   r="4.5" fill="#b8892a" stroke="#fff" stroke-width="2"/>
+            <text x="10"  y="134" font-size="7.5" fill="#9e8f7e" text-anchor="middle" font-family="DM Sans,sans-serif">Jan</text>
+            <text x="43"  y="134" font-size="7.5" fill="#9e8f7e" text-anchor="middle" font-family="DM Sans,sans-serif">Feb</text>
+            <text x="80"  y="134" font-size="7.5" fill="#9e8f7e" text-anchor="middle" font-family="DM Sans,sans-serif">Mar</text>
+            <text x="113" y="134" font-size="7.5" fill="#9e8f7e" text-anchor="middle" font-family="DM Sans,sans-serif">Apr</text>
+            <text x="146" y="134" font-size="7.5" fill="#9e8f7e" text-anchor="middle" font-family="DM Sans,sans-serif">May</text>
+            <text x="178" y="134" font-size="7.5" fill="#9e8f7e" text-anchor="middle" font-family="DM Sans,sans-serif">Jun</text>
+            <text x="212" y="134" font-size="7.5" fill="#9e8f7e" text-anchor="middle" font-family="DM Sans,sans-serif">Jul</text>
+            <text x="245" y="134" font-size="7.5" fill="#9e8f7e" text-anchor="middle" font-family="DM Sans,sans-serif">Aug</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- VCO -->
+      <div class="vco-card">
+        <h3>🤖 Virtual Compliance Officer</h3>
+        <div class="vco-body">
+          <div class="vco-av">👩‍💼</div>
+          <div class="vco-bubble">
+            <div class="vco-name">Aria – Your VCO</div>
+            <p id="vco-msg">Hi! I'm your Virtual Compliance Officer. Your ROC filing is overdue. Shall I prepare the documents for immediate filing?</p>
+          </div>
+        </div>
+        <div class="vco-actions">
+          <button class="bvco bvco-p" onclick="vcoAct('file')">File Return</button>
+          <button class="bvco bvco-s" onclick="vcoAct('status')">Check Status</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="closeOut(event)">
+  <div class="modal" id="mbox">
+    <h3 id="mtitle"></h3>
+    <div id="mbody"></div>
+    <button class="modal-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+const data = {
+  'GST':[['Filing Type','GSTR-3B (Monthly)'],['Due Date','15th May 2023'],['Period','April 2023'],['Tax Liability','₹ 48,200'],['Status','⏳ Pending'],['Assigned To','CA Ramesh Gupta'],['Last Filed','15th April 2023 ✓']],
+  'Income Tax':[['Filing Type','Advance Tax – Q4'],['Due Date','31st July 2023'],['Assessment Year','AY 2023–24'],['Amount Paid','₹ 1,20,000'],['Status','✅ Completed'],['Assigned To','CA Sunita Sharma'],['Filed On','28th July 2023 ✓']],
+  'TDS':[['Filing Type','Form 26Q – Quarterly'],['Due Date','31st July 2023'],['Quarter','Q1 (Apr–Jun 2023)'],['Total Deductions','₹ 32,500'],['Status','⏳ Pending'],['Assigned To','CA Ramesh Gupta'],['Last Filed','31st April 2023 ✓']],
+  'ROC':[['Filing Type','MGT-7 Annual Return'],['Due Date','30th April 2023'],['Financial Year','FY 2022–23'],['Filing Fee','₹ 2,000'],['Status','⚠️ Overdue'],['Assigned To','CS Priya Mehta'],['Action Required','Immediate filing required']],
+};
+
+function openModal(t){
+  document.getElementById('mtitle').textContent = t + ' – Filing Details';
+  document.getElementById('mbody').innerHTML = (data[t]||[]).map(([k,v])=>`<div class="mrow"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+function closeOut(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
+function vcoAct(t){
+  const m = document.getElementById('vco-msg');
+  m.textContent = t==='file'
+    ? 'Preparing ROC documents for filing. Draft will be ready for your review within 2 hours. ✓'
+    : 'Status check complete: 4 pending, 1 overdue (ROC). Recommend immediate action on ROC to avoid additional penalty.';
+}
+document.querySelectorAll('.sidebar-item').forEach(i=>{
+  i.addEventListener('click',function(){
+    document.querySelectorAll('.sidebar-item').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
